@@ -1,11 +1,11 @@
-use ::skrifa::{
+use skrifa::outline::{HintingOptions, InterpreterVersion};
+use skrifa::{
     outline::{DrawError, DrawSettings, HintingInstance, OutlinePen},
     prelude::{LocationRef, Size},
     raw::types::F2Dot14,
     raw::{FontRef, TableProvider},
     GlyphId, MetadataProvider, OutlineGlyphCollection,
 };
-use skrifa::outline::HintingOptions;
 
 use super::{InstanceOptions, SharedFontData};
 
@@ -34,6 +34,7 @@ impl<'a> SkrifaInstance<'a> {
                         size,
                         options.coords,
                         options.hinting.unwrap().skrifa_options(),
+                        InterpreterVersion::_40,
                     )
                     .ok()?,
                 )
@@ -48,6 +49,7 @@ impl<'a> SkrifaInstance<'a> {
                             engine: skrifa::outline::Engine::Interpreter,
                             target: skrifa::outline::Target::Mono,
                         },
+                        InterpreterVersion::_40,
                     )
                     .ok()?,
                 )

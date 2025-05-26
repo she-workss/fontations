@@ -11,6 +11,7 @@ use super::{
     },
     math, Engine, F26Dot6, HintErrorKind, OpResult,
 };
+use crate::outline::InterpreterVersion;
 
 impl Engine<'_> {
     /// Flip point.
@@ -33,7 +34,8 @@ impl Engine<'_> {
         self.graphics.loop_counter = 1;
         // In backward compatibility mode, don't flip points after IUP has
         // been done.
-        if self.graphics.backward_compatibility
+        if self.graphics.interpreter_version == InterpreterVersion::_40
+            && self.graphics.backward_compatibility
             && self.graphics.did_iup_x
             && self.graphics.did_iup_y
         {
@@ -229,7 +231,7 @@ impl Engine<'_> {
         let did_iup = gs.did_iup_x && gs.did_iup_y;
         for _ in 0..count {
             let p = self.value_stack.pop_usize()?;
-            if gs.backward_compatibility {
+            if gs.interpreter_version == InterpreterVersion::_40 && gs.backward_compatibility {
                 if in_twilight
                     || (!did_iup
                         && ((gs.is_composite && gs.freedom_vector.y != 0)
@@ -384,7 +386,7 @@ impl Engine<'_> {
     /// de: distance type for engine characteristic compensation
     ///
     /// Pops: p: point number
-    ///       
+    ///
     /// MDRP moves point p along the freedom_vector so that the distance from
     /// its new position to the current position of rp0 is the same as the
     /// distance between the two points in the original uninstructed outline,
@@ -467,7 +469,7 @@ impl Engine<'_> {
     ///
     /// Pops: n: CVT entry number
     ///       p: point number
-    ///       
+    ///
     /// A MIRP instruction makes it possible to preserve the distance between
     /// two points subject to a number of qualifications. Depending upon the
     /// setting of Boolean flag b, the distance can be kept greater than or
@@ -782,7 +784,7 @@ impl Engine<'_> {
         let mut run = true;
         // In backward compatibility mode, allow IUP until it has been done on
         // both axes.
-        if gs.backward_compatibility {
+        if gs.interpreter_version == InterpreterVersion::_40 && gs.backward_compatibility {
             if gs.did_iup_x && gs.did_iup_y {
                 run = false;
             }
@@ -842,7 +844,8 @@ impl Engine<'_> {
             .ok_or(HintErrorKind::InvalidPointIndex(high_point))?;
         // In backward compatibility mode, don't flip points after IUP has
         // been done.
-        if self.graphics.backward_compatibility
+        if self.graphics.interpreter_version == InterpreterVersion::_40
+            && self.graphics.backward_compatibility
             && self.graphics.did_iup_x
             && self.graphics.did_iup_y
         {
